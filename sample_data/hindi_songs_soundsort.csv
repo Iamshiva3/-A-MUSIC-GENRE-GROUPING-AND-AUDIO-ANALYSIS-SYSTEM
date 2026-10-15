@@ -1,0 +1,21 @@
+track_name,artist,tempo,energy,danceability,valence,acousticness,loudness,speechiness,instrumentalness
+Tum Hi Ho,Arijit Singh,94,0.52,0.48,0.12,0.28,-8.2,0.04,0.01
+Chaiyya Chaiyya,Sukhwinder Singh,104,0.88,0.82,0.72,0.74,-5.1,0.08,0.02
+Apna Bana Le,Arijit Singh,100,0.62,0.66,0.78,0.67,-6.7,0.05,0.01
+Kesariya,Arijit Singh,94,0.68,0.72,0.64,0.75,-6.0,0.04,0.02
+Kala Chashma,Amar Arshi,105,0.91,0.89,0.81,0.79,-4.2,0.1,0.0
+Ghungroo,Arijit Singh,130,0.86,0.84,0.78,0.7,-4.8,0.06,0.01
+Badtameez Dil,Benny Dayal,122,0.89,0.87,0.83,0.82,-4.5,0.07,0.0
+Zara Zara,Bombay Jayashri,72,0.38,0.45,0.54,0.58,-10.1,0.03,0.06
+Agar Tum Saath Ho,Alka Yagnik,102,0.42,0.47,0.52,0.63,-9.0,0.04,0.02
+Raabta,Arijit Singh,80,0.55,0.59,0.62,0.72,-7.4,0.04,0.02
+Rock On,Farhan Akhtar,105,0.87,0.62,0.48,0.58,-5.3,0.04,0.03
+Sadda Haq,Mohit Chauhan,145,0.93,0.55,0.45,0.6,-3.8,0.05,0.01
+Kun Faya Kun,A.R. Rahman,84,0.45,0.43,0.4,0.68,-8.7,0.04,0.18
+Iktara,Kavita Seth,82,0.4,0.44,0.51,0.76,-9.4,0.03,0.12
+Ilahi,Arijit Singh,92,0.72,0.75,0.7,0.84,-6.1,0.04,0.03
+Gallan Goodiyaan,Yashita Sharma,128,0.94,0.92,0.88,0.86,-3.7,0.08,0.0
+Dilliwali Girlfriend,Arijit Singh,140,0.9,0.91,0.85,0.81,-4.0,0.09,0.0
+Aankh Marey,Neha Kakkar,125,0.92,0.93,0.9,0.88,-3.5,0.11,0.0
+Tujh Mein Rab Dikhta Hai,Roop Kumar Rathod,78,0.35,0.39,0.42,0.55,-10.5,0.03,0.1
+Pee Loon,Mohit Chauhan,92,0.58,0.55,0.6,0.69,-7.8,0.04,0.04

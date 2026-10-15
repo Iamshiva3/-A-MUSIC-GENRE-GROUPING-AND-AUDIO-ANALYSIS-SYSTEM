@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analyze — SoundSort</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#07070f;--surface:#10101e;--accent:#c8ff57;--text:#f0f0f8;--muted:#777794;--border:#24243c;--error:#ff6b6b}
+    *{box-sizing:border-box;margin:0;padding:0} body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh}
+    nav{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2.5rem;border-bottom:1px solid var(--border)}
+    .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;text-decoration:none;color:var(--text)} .logo span{color:var(--accent)}
+    .back{color:var(--muted);text-decoration:none;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+    main{display:flex;justify-content:center;padding:4rem 1.5rem}.card{width:100%;max-width:680px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:2.5rem}
+    h1{font-family:'Syne',sans-serif;font-size:2.2rem;margin-bottom:.5rem}.desc,.section-description{color:var(--muted);font-size:.82rem;line-height:1.7}.desc{margin-bottom:1.8rem}.section-description{margin-bottom:1.4rem}
+    .mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem}.mode-btn{padding:1rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:6px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700}.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(200,255,87,.06)}
+    .drop-zone{border:2px dashed var(--border);border-radius:7px;padding:3rem 2rem;text-align:center;position:relative;margin-bottom:1.4rem;transition:.2s}.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(200,255,87,.04)}
+    .drop-zone input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.drop-icon{font-size:2.5rem;margin-bottom:.7rem}.drop-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.35rem}.drop-hint{color:var(--muted);font-size:.76rem}.file-chosen{color:var(--accent);font-size:.8rem;margin-top:.7rem}
+    .requirements{background:rgba(200,255,87,.04);border:1px solid rgba(200,255,87,.15);border-radius:6px;padding:1.2rem 1.4rem;margin-bottom:1.5rem}.requirements h4{font-family:'Syne',sans-serif;color:var(--accent);font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.7rem}.requirements ul{list-style:none}.requirements li{color:var(--muted);font-size:.77rem;padding:.23rem 0}.requirements li::before{content:'→ ';color:var(--accent)}
+    .btn{width:100%;background:var(--accent);color:#07070f;border:0;border-radius:5px;padding:1rem;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;cursor:pointer}.flash{background:rgba(255,107,107,.1);border:1px solid var(--error);color:var(--error);padding:.9rem 1.1rem;border-radius:5px;font-size:.8rem;margin-bottom:1.4rem}
+    .loading{display:none;position:fixed;inset:0;background:rgba(7,7,15,.9);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:1.2rem}.loading.active{display:flex}.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}.loading p{color:var(--muted);font-size:.85rem}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:600px){nav{padding:1rem 1.2rem}.card{padding:1.5rem}.mode-selector{grid-template-columns:1fr}main{padding:2rem 1rem}}
+  </style>
+</head>
+<body>
+<nav><a href="{{ url_for('index') }}" class="logo">Sound<span>Sort</span></a><a href="{{ url_for('index') }}" class="back">← Home</a></nav>
+<div class="loading" id="loading"><div class="spinner"></div><p id="loadingText">Analysing your music...</p></div>
+<main><div class="card">
+  <h1>Analyze your music</h1><p class="desc">Choose dataset clustering or analyze an individual MP3/WAV file directly.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="flash">⚠ {{ message }}</div>{% endfor %}{% endwith %}
+  <div class="mode-selector"><button type="button" class="mode-btn active" id="csvModeBtn">📊 Dataset Analysis</button><button type="button" class="mode-btn" id="audioModeBtn">🎵 Song Analysis</button></div>
+
+  <section id="csvSection">
+    <p class="section-description">Upload a CSV and group similar tracks using scaling, silhouette analysis and K-Means clustering.</p>
+    <form action="{{ url_for('process') }}" method="POST" enctype="multipart/form-data" id="csvForm">
+      <div class="drop-zone"><input type="file" name="file" id="csvInput" accept=".csv" required><div class="drop-icon">📊</div><div class="drop-title">Drop your CSV here</div><div class="drop-hint">or click to browse — max 25 MB</div><div class="file-chosen" id="csvChosen"></div></div>
+      <div class="requirements"><h4>Required columns</h4><ul><li><code>tempo</code> — beats per minute</li><li><code>energy</code> — intensity 0.0–1.0</li><li><code>danceability</code> — groove score 0.0–1.0</li></ul></div>
+      <button type="submit" class="btn">Analyse Dataset →</button>
+    </form>
+  </section>
+
+  <section id="audioSection" hidden>
+    <p class="section-description">Upload an actual song. SoundSort extracts signal-level features automatically with Librosa.</p>
+    <form action="{{ url_for('analyze_audio') }}" method="POST" enctype="multipart/form-data" id="audioForm">
+      <div class="drop-zone"><input type="file" name="audio" id="audioInput" accept=".mp3,.wav" required><div class="drop-icon">🎵</div><div class="drop-title">Drop your song here</div><div class="drop-hint">MP3 or WAV — max 25 MB</div><div class="file-chosen" id="audioChosen"></div></div>
+      <div class="requirements"><h4>Extracted automatically</h4><ul><li>Tempo / BPM and RMS energy</li><li>13 MFCC coefficients and chroma</li><li>Zero-crossing rate</li><li>Spectral centroid, bandwidth and rolloff</li></ul></div>
+      <button type="submit" class="btn">Analyze Song →</button>
+    </form>
+  </section>
+</div></main>
+<script>
+const csvSection=document.getElementById('csvSection'),audioSection=document.getElementById('audioSection');
+const csvBtn=document.getElementById('csvModeBtn'),audioBtn=document.getElementById('audioModeBtn');
+function show(mode){const csv=mode==='csv';csvSection.hidden=!csv;audioSection.hidden=csv;csvBtn.classList.toggle('active',csv);audioBtn.classList.toggle('active',!csv)}
+csvBtn.addEventListener('click',()=>show('csv'));audioBtn.addEventListener('click',()=>show('audio'));
+[['csvInput','csvChosen'],['audioInput','audioChosen']].forEach(([inputId,labelId])=>{document.getElementById(inputId).addEventListener('change',e=>{document.getElementById(labelId).textContent=e.target.files[0]?'✓ '+e.target.files[0].name:''})});
+const loading=document.getElementById('loading'),loadingText=document.getElementById('loadingText');
+document.getElementById('csvForm').addEventListener('submit',()=>{loadingText.textContent='Clustering your music dataset...';loading.classList.add('active')});
+document.getElementById('audioForm').addEventListener('submit',()=>{loadingText.textContent='Extracting audio features...';loading.classList.add('active')});
+</script>
+</body></html>
