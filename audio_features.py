@@ -4,13 +4,18 @@ import numpy as np
 
 def extract_audio_features(file_path):
     # Load first 30 seconds of audio
-    y, sr = librosa.load(file_path, duration=30)
+    y, sr = librosa.load(
+    file_path,
+    sr=16000,
+    mono=True,
+    duration=10
+)
 
     if len(y) == 0:
         raise ValueError("Could not read audio data.")
 
     # Tempo
-    tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+    tempo = 0.0
     tempo = float(np.asarray(tempo).reshape(-1)[0])
 
     # RMS Energy
